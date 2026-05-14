@@ -17,6 +17,8 @@ test('Built-in fixtures', async ({page, browser, request}) => {
 
 test('Custom Fixtures page', async({stockPage}) => {
 
+    console.log('inside the test');
+    
     await stockPage.goto();
 
     await stockPage.ticker('MSFT').click();
