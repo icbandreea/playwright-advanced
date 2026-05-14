@@ -1,4 +1,4 @@
-import {test as base} from '@playwright/test';
+import {test as base, expect} from '@playwright/test';
 import { StockTradingPage } from '../StockTradingPage.js';
 import { AnalyticsPage } from '../AnalyticsPage.js';
 
@@ -7,7 +7,11 @@ export type PageFixtures = {
     analyticsPage: AnalyticsPage
 }
 
-export const test = base.extend<PageFixtures>({
+export type ConfigOptions = {
+    failOnJSError: boolean;
+}
+
+export const test = base.extend<PageFixtures & ConfigOptions>({
     stockPage: async ({page}, use) => {
         const stockPage = new StockTradingPage(page);
 
@@ -24,16 +28,27 @@ export const test = base.extend<PageFixtures>({
         
     },
 
-    // override native fixtures
-    page: async ({page}, use) => {
+   // Playwright fixture tuple:
+// [defaultValue, fixtureOptions]
+    failOnJSError: [false, { }],
 
-        console.log('inside the native page override - before');
-        
+    // override native fixtures
+    page: async ({page, failOnJSError}, use) => {
+
+        const errors: Array<Error> = [];
+        page.on('pageerror', error => {
+            errors.push(error);
+        }); // ***
+
+        // console.log('inside the native page override - before');
         //here you can do whatever you want (run code before and after very test) , BUT, the mandatory line is the following:
         await use(page);
-
-        console.log('inside the native page override - after');
+        // console.log('inside the native page override - after');
         // **
+
+        if(failOnJSError) {
+            expect(errors).toHaveLength(0);
+        }
     }
         
 });
@@ -45,6 +60,7 @@ export const test = base.extend<PageFixtures>({
 //this might be confusing and error prone to have 2 sources
 export {expect} from '@playwright/test';
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // *
 // so what we wanted to show with those console.logs is that the code before await use(stockPage) is ran before starting the test, then the test executes, and the code after use 
@@ -65,3 +81,8 @@ export {expect} from '@playwright/test';
 
 // as we can see, first the program executes the code before the native page override hook, then the code before the custom fixture hook(that uses page), then 
 // the code inside the test, then the code after the custom fixture hook, and then the code after the native page override hook
+
+
+// ***
+// Global Playwright fixture that fails tests on browser JS errors.  we define it as a tuple, where the value inside is a boolean
+// if we set it to true (if there are errors, then tests fails), if set to false, then test passes even if there are browser JS errors

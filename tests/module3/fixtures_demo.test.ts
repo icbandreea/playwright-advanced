@@ -33,3 +33,8 @@ test('Custom Fixtures page', async({stockPage}) => {
     await expect(stockPage.actionError()).toHaveText('Insufficient cash');
 
 });
+
+
+test('Override existing page fixture', async({stockPage}) => {
+    await stockPage.goto();
+});
