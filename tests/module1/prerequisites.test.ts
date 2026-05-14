@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 // not a real test - just a collection of fundamental Playwright capabilities
-test('Prerequisite knowledge for the advanced course', async ({ page, browser, request }) => {
+test.skip('Prerequisite knowledge for the advanced course', async ({ page, browser, request }) => {
 
   const ctx = browser.newContext({
     javaScriptEnabled: false,
@@ -10,7 +10,7 @@ test('Prerequisite knowledge for the advanced course', async ({ page, browser, r
     // etc.
   });
 
-
+ 
   await page.goto('url');
 
   // locators

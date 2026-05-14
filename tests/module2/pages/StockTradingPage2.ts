@@ -1,53 +1,56 @@
-import type { Locator, Page } from '@playwright/test';
+import type{Locator, Page} from "@playwright/test";
 
-export class StockPage {
+// Encapsulating the locators + action
+//function is typically a verb
+export class StockTradingPage2 {
     readonly page: Page;
 
     constructor(page: Page) {
         this.page = page;
     }
 
+    //playwright.config.ts file has the rest of the URL
     async goto() {
         await this.page.goto('index.html');
     }
 
-    /* ========= Left column ========= */
-    selectTicker(ticker: string): Locator {
-        return this.page
+    /* -------- Left column --------- */
+
+    async selectTicker(ticker: string) {
+        await this.page
             .getByTestId('stock-list')
             .getByRole('listitem')
-            .filter({ hasText: ticker })
+            .filter({hasText: ticker})
+            .click();
     }
 
-    /* ========= Right column ========= */
-
+    /* -------- Right column --------- */
 
     // Form for placing buy/sell orders
     currentPrice(): Locator {
         return this.page.getByTestId('stock-price');
     }
 
-    limitPriceInput(): Locator {
-        return this.page.getByLabel('Limit Price');
+    async enterPrice(price: string) {
+        await this.page.getByLabel('Limit Price').fill(price);
     }
 
-    quantityInput(): Locator {
-        return this.page.getByLabel('Quantity');
+    async enterQuantity(qty: string) {
+        await this.page.getByLabel('Quantity').fill(qty);
     }
 
     valueInput(): Locator {
         return this.page.getByLabel('Value');
     }
 
-    buyButton(): Locator {
-        return this.page.getByRole('button', { name: 'Buy', exact: true });
+    async clickBuy() {
+        await this.page.getByRole('button', {name: 'Buy', exact: true}).click();
     }
 
-    sellButton(): Locator {
-        return this.page.getByRole('button', { name: 'Sell', exact: true });
+    async clickSell() {
+        await this.page.getByRole('button', {name: 'Sell', exact: true}).click();
     }
 
-    // form error messages
     priceError(): Locator {
         return this.page.getByTestId('price-error');
     }
@@ -60,8 +63,7 @@ export class StockPage {
         return this.page.getByTestId('action-error');
     }
 
-
-    /* ========= Portfolio ========= */
+    /* -------- Portfolio --------- */
 
     cashBalance(): Locator {
         return this.page.getByTestId('cash');
