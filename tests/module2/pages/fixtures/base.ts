@@ -9,6 +9,7 @@ export type PageFixtures = {
 
 export type ConfigOptions = {
     failOnJSError: boolean;
+    failOnNetworkError: boolean;
 }
 
 export const test = base.extend<PageFixtures & ConfigOptions>({
@@ -30,15 +31,26 @@ export const test = base.extend<PageFixtures & ConfigOptions>({
 
    // Playwright fixture tuple:
 // [defaultValue, fixtureOptions]
-    failOnJSError: [false, { }],
+    failOnJSError: [true, { }],
+    failOnNetworkError: [true, {
+        option: true, //override via playwright.config.ts file
+     }],
 
     // override native fixtures
-    page: async ({page, failOnJSError}, use) => {
+    page: async ({page, failOnJSError, failOnNetworkError}, use) => {
 
         const errors: Array<Error> = [];
         page.on('pageerror', error => {
             errors.push(error);
         }); // ***
+
+        if(failOnNetworkError) {
+            page.on("response", response => {
+                //we put it as a soft assertions so that it fails after collecting all the responses first
+                expect.soft(response.status(),
+            `Response with status ${response.status()} for URL: ${response.url()}`).toBeLessThan(400);
+            });
+        }
 
         // console.log('inside the native page override - before');
         //here you can do whatever you want (run code before and after very test) , BUT, the mandatory line is the following:
