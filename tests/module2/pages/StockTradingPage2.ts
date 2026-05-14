@@ -1,4 +1,5 @@
 import type{Locator, Page} from "@playwright/test";
+import type { Order } from "./types/Order.js";
 
 // Encapsulating the locators + action
 //function is typically a verb
@@ -49,6 +50,17 @@ export class StockTradingPage2 {
 
     async clickSell() {
         await this.page.getByRole('button', {name: 'Sell', exact: true}).click();
+    }
+
+    async placeOrder(order: Order) {
+        await this.page.getByLabel('Limit Price').fill(order.price.toString());
+        await this.page.getByLabel('Quantity').fill(order.quantity.toString());
+
+        if(order.side === 'buy') {
+            await this.page.getByRole('button', {name: 'Buy', exact: true}).click();
+        } else {
+            await this.page.getByRole('button', {name: 'Sell', exact: true}).click();
+        }
     }
 
     priceError(): Locator {

@@ -2,6 +2,7 @@ import {expect, test} from '@playwright/test';
 import { StockTradingPage } from './pages/StockTradingPage.js';
 import { StockTradingPage2 } from './pages/StockTradingPage2.js';
 import { AnalyticsPage } from './pages/AnalyticsPage.js';
+import type { Order } from './pages/types/Order.js';
 
 test('POM Level 1 Demo - Attempt to buy more than available cash balance', async({page}) => {
     const stockTradingPage = new StockTradingPage(page);
@@ -53,8 +54,21 @@ test('Using navigation - StockTradingPage', async({page}) => {
     const expectedCash = (initialCash - marketPrice).toFixed(2);
     await expect(analyticsPage.cashBalance()).toHaveText(expectedCash);
 
-
-
-    
-
 });
+
+test('With Custom Order type', async({page}) => {
+    const stockTradingPage = new StockTradingPage2(page);
+    await stockTradingPage.goto();
+
+    await stockTradingPage.selectTicker('AMZN');
+    const marketPrice = Number(await stockTradingPage.currentPrice().textContent());
+
+    const order: Order = {
+        ticker: 'AMZN',
+        price: marketPrice,
+        quantity: 10,
+        side: 'buy'
+    };
+
+    await stockTradingPage.placeOrder(order);
+})
