@@ -3,6 +3,7 @@ import { StockTradingPage } from './pages/StockTradingPage.js';
 import { StockTradingPage2 } from './pages/StockTradingPage2.js';
 import { AnalyticsPage } from './pages/AnalyticsPage.js';
 import type { Order } from './pages/types/Order.js';
+import { Pages } from './pages/Pages.js';
 
 test('POM Level 1 Demo - Attempt to buy more than available cash balance', async({page}) => {
     const stockTradingPage = new StockTradingPage(page);
@@ -71,4 +72,16 @@ test('With Custom Order type', async({page}) => {
     };
 
     await stockTradingPage.placeOrder(order);
+});
+
+
+test('Pages factory demo', async({page}) => {
+    
+    //the variable ui is entry point to get all the pages
+    const ui = new Pages(page);
+
+    await ui.stockPage.ticker('AMZN').click();
+    const msg = await ui.analyticsPage.cashBalance().textContent();
+    // !!! This approach is fine for relatively simple apps, but there is another way to abstract away page class creation and 
+    // that is by creating custom fixtures. In other words, you will be able to inject your custom pages
 })
