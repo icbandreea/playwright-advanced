@@ -1,6 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
 import type { ConfigOptions } from './tests/module2/pages/fixtures/base.js';
+//import dotenv from "dotenv";
+import {config} from "@dotenvx/dotenvx";
 
+config();
+
+//dotenv.config(); // reads .env file and loads and for every key value pair it finds, it writes it into the process.env
 
 export default defineConfig<ConfigOptions>({
   
