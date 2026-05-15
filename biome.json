@@ -18,6 +18,10 @@
 			"recommended": true,
 			"suspicious": {
 				"noAssignInExpressions": "off"
+			},
+			"nursery": {
+				"noPlaywrightMissingAwait": "error",
+				"noPlaywrightUselessAwait": "error"
 			}
 		}
 	},
